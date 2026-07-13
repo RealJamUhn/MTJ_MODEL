@@ -4,34 +4,41 @@ def convert_bible_to_numbers(file_path):
     """
     number_array = []
     
-    # 1. 텍스트 읽기
-    # 영문 성경이라도 특수기호 처리를 위해 'utf-8' 인코딩을 명시하는 것이 안전합니다.
     with open(file_path, 'r', encoding='utf-8') as file:
         text_data = file.read()
         
-        # 2 & 3. 유니코드 변환 및 0~9 스케일링
         for char in text_data:
-            # (선택 사항) 띄어쓰기나 줄바꿈 같은 공백 문자를 제외하고 싶다면 아래 코드를 활성화하세요.
-            # if char.isspace(): 
-            #     continue
-                
-            unicode_val = ord(char)         # 문자를 유니코드(아스키) 정수로 변환
-            scaled_val = unicode_val % 10   # 10으로 나눈 나머지 계산 (0~9)
-            
+            unicode_val = ord(char)
+            scaled_val = unicode_val % 10
             number_array.append(scaled_val)
             
     return number_array
 
-# --- 실행 예시 ---
-# 'english_bible.txt' 파일이 같은 폴더에 있다고 가정합니다.
-file_name = 'english_bible.txt'
+def save_numbers_to_file(numbers, output_file_path):
+    """
+    숫자 배열을 텍스트 파일로 저장합니다.
+    """
+    with open(output_file_path, 'w', encoding='utf-8') as file:
+        # 리스트 안의 정수들을 문자열로 변환한 뒤, 공백 없이 하나로 이어 붙입니다.
+        string_data = "".join(map(str, numbers))
+        file.write(string_data)
+        
+# --- 실행 및 저장 예시 ---
+input_file_name = 'bible.txt'        # 원본 성경 텍스트 파일명
+output_file_name = 'number_output.txt' # 새로 저장될 숫자 텍스트 파일명
 
 try:
-    bible_numbers = convert_bible_to_numbers(file_name)
+    # 1. 숫자 변환 실행
+    print("데이터 변환을 시작합니다...")
+    bible_numbers = convert_bible_to_numbers(input_file_name)
     
-    # 결과 확인 (전체 데이터 개수 및 처음 20개 숫자 출력)
     print(f"총 추출된 숫자 개수: {len(bible_numbers):,}개")
-    print(f"처음 20개 숫자 샘플: {bible_numbers[:20]}")
+    
+    # 2. 파일로 저장 실행
+    print(f"'{output_file_name}' 파일에 결과를 저장하는 중...")
+    save_numbers_to_file(bible_numbers, output_file_name)
+    
+    print("모든 작업이 성공적으로 완료되었습니다!")
     
 except FileNotFoundError:
-    print(f"오류: '{file_name}' 파일을 찾을 수 없습니다. 파일 경로를 확인해 주세요.")
+    print(f"오류: '{input_file_name}' 파일을 찾을 수 없습니다. 원본 파일이 같은 폴더에 있는지 확인해 주세요.")
